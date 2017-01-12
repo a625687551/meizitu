@@ -7,7 +7,7 @@
 from meizitu.items import MeizituItem
 import re
 import os
-import requests
+from scrapy.http import Request
 
 class MeizituPipeline(object):
     def process_item(self, item, spider):
