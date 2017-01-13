@@ -12,9 +12,6 @@ class MeizituItem(scrapy.Item):
     # define the fields for your item here like:
     # name = scrapy.Field()
     image_name = scrapy.Field()
-    image_content = scrapy.Field()
     image_url = scrapy.Field()
-    file_name = scrapy.Field()
-
-
-pass
+    # images = scrapy.Field()
+    file_paths= scrapy.Field()

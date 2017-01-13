@@ -65,9 +65,12 @@ ROBOTSTXT_OBEY = False
 # Configure item pipelines
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-   'meizitu.pipelines.SomePipeline': 300,
+   'meizitu.pipelines.DownloadImagesPipeline': 300,
+   'scrapy.pipelines.images.ImagesPipeline': 1,
+   'scrapy.pipelines.files.FilesPipeline': 1
 }
-
+FILES_STORE = 'F:\meizitu'
+IMAGES_STORE = 'F:\meizitu'
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See http://doc.scrapy.org/en/latest/topics/autothrottle.html
 #AUTOTHROTTLE_ENABLED = True
