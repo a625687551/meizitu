@@ -69,8 +69,14 @@ ITEM_PIPELINES = {
    'scrapy.pipelines.images.ImagesPipeline': 1,
    'scrapy.pipelines.files.FilesPipeline': 1
 }
-FILES_STORE = 'F:\meizitu'
-IMAGES_STORE = 'F:\meizitu'
+FILES_STORE = 'F:\meizitu'#文件存储地址
+IMAGES_STORE = 'F:\meizitu'#图片存储地址
+# 120 days of delay for files expiration
+# FILES_EXPIRES = 120
+
+# 30 days of delay for images expiration
+# IMAGES_EXPIRES = 30
+
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See http://doc.scrapy.org/en/latest/topics/autothrottle.html
 #AUTOTHROTTLE_ENABLED = True
