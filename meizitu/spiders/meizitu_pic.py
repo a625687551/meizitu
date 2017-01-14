@@ -13,6 +13,8 @@ class Meizispider(scrapy.Spider):
     start_urls=['http://www.mzitu.com/all']
 
     def parse(self, response):#爬去主页面的所有连接
+        proxy= response.meta.get('proxy','localhost')
+        print(proxy,u'代理开始采集')
         content=response.xpath('//ul[@class="archives"]/li/p[2]/a')
         for single in content:
             page_url=single.xpath('@href').extract()[0]
