@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 
 # Scrapy settings for meizitu project
 #
@@ -118,6 +118,9 @@ IMAGES_STORE = 'F:\meizitu'#图片存储地址
 
 # 30 days of delay for images expiration
 IMAGES_EXPIRES = 1
+#开启重试次数
+RETRY_ENABLED =True
+RETRY_TIMES=5
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See http://doc.scrapy.org/en/latest/topics/autothrottle.html
