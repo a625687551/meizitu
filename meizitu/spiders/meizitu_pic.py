@@ -5,6 +5,8 @@ from scrapy.http import Request
 from meizitu.items import MeizituItem
 import string
 import re
+from datetime import datetime
+import time
 
 
 class Meizispider(scrapy.Spider):
@@ -33,8 +35,9 @@ class Meizispider(scrapy.Spider):
         image_name=image_url[0][-9:-4]
         item['file_paths']=resposne.meta['file_paths']
         item['image_url']=image_url
-        item['image_name']=image_name+'.jpg'
-        print(item)
+        item['image_name']=re.sub(r'\\/:*?"<>|','',image_name.strip())+'.jpg'
+        print(item,datetime.now())
+        time.sleep(0.5)
         yield item
 
 
