@@ -95,6 +95,7 @@ COOKIES_ENABLED = False
 DOWNLOADER_MIDDLEWARES = {
     'scrapy.concontrib.downloadermiddleware.useragent.UserAgentMiddleware' : None,
     'meizitu.middlewares.RandomUserAgent.RandomUserAgent': 200,
+    'meizitu.middlewares.RandomProxy.RandomProxy': 200,
 }
 
 # Enable or disable extensions
@@ -116,7 +117,7 @@ IMAGES_STORE = 'F:\meizitu'#图片存储地址
 # FILES_EXPIRES = 120
 
 # 30 days of delay for images expiration
-# IMAGES_EXPIRES = 30
+IMAGES_EXPIRES = 1
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See http://doc.scrapy.org/en/latest/topics/autothrottle.html
