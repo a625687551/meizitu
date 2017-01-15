@@ -24,6 +24,7 @@ class Meizispider(scrapy.Spider):
     def get_all_page(self,response):#爬去所有页面的链接
         page_url=response.meta['page_url']
         max_span=response.xpath('//div[@class="pagenavi"]/a/span/text()').extract()[-2]
+        # print(page_url,u'最大页',max_span)
         file_paths=response.xpath('//h2[@class="main-title"]/text()').extract()[0].strip()
         print(file_paths)
         for page in range(1,int(max_span)+1):
