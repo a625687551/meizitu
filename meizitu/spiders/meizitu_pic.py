@@ -13,14 +13,21 @@ class Meizispider(scrapy.Spider):
     name = 'meizitu'
     allowed_domains=['mzitu.com']
     start_urls=['http://www.mzitu.com/all']
+    website_possible_httpstatus_list = [403]
+    handle_httpstatus_list = [403]
 
     def parse(self, response):#爬去主页面的所有连接
-        proxy= response.meta.get('proxy','localhost')
-        print(proxy,u'代理开始采集')
-        content=response.xpath('//ul[@class="archives"]/li/p[2]/a')
-        for single in content:
-            page_url=single.xpath('@href').extract()[0]
-            yield Request(url=page_url,callback=self.get_all_page,meta={'page_url':page_url})
+        # proxy= response.meta.get('proxy','localhost')
+        # print(proxy,u'代理开始采集')
+        if response.body == "banned":
+            req = response.request
+            req.meta["change_proxy"] = True
+            yield req
+        else:
+            content=response.xpath('//ul[@class="archives"]/li/p[2]/a')
+            for single in content:
+                page_url=single.xpath('@href').extract()[0]
+                yield Request(url=page_url,callback=self.get_all_page,meta={'page_url':page_url})
     def get_all_page(self,response):#爬去所有页面的链接
         page_url=response.meta['page_url']
         max_span=response.xpath('//div[@class="pagenavi"]/a/span/text()').extract()[-2]

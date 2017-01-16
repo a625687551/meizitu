@@ -95,8 +95,9 @@ COOKIES_ENABLED = False
 DOWNLOADER_MIDDLEWARES = {
     'scrapy.concontrib.downloadermiddleware.useragent.UserAgentMiddleware' : None,
     'meizitu.middlewares.RandomUserAgent.RandomUserAgent': 200,
-    'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware': 110,
-    'meizitu.middlewares.RandomProxy.RandomProxy': 200,
+    # 'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware': 110,
+    'meizitu.middlewares.HttpProxyMiddleware.HttpProxyMiddleware': 543,
+    'scrapy.downloadermiddlewares.downloadtimeout.DownloadTimeoutMiddleware': 350,
 }
 
 # Enable or disable extensions
@@ -143,3 +144,5 @@ RETRY_TIMES=5
 # HTTPCACHE_DIR = 'httpcache'
 # HTTPCACHE_IGNORE_HTTP_CODES = []
 # HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
+
+DOWNLOAD_TIMEOUT = 10

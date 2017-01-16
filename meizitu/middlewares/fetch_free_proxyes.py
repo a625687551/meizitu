@@ -1,17 +1,16 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 from bs4 import BeautifulSoup
-import urllib2
+import requests
+import re
 import logging
 
 logger = logging.getLogger(__name__)
 
-def get_html(url):
-    request = urllib2.Request(url)
-    request.add_header("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.99 Safari/537.36")
-    html = urllib2.urlopen(request)
-    return html.read()
-
+def get_html(url):#获取网页
+    headers={"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.99 Safari/537.36"}
+    html=requests.get(url,headers=headers)
+    return html.text
 def get_soup(url):
     soup = BeautifulSoup(get_html(url), "lxml")
     return soup
@@ -38,37 +37,30 @@ def fetch_kxdaili(page):
         logger.warning("fail to fetch from kxdaili")
     return proxyes
 
-def img2port(img_url):
-    """
-    mimvp.com的端口号用图片来显示, 本函数将图片url转为端口, 目前的临时性方法并不准确
-    """
-    code = img_url.split("=")[-1]
-    if code.find("AO0OO0O")>0:
-        return 80
-    else:
-        return None
+# def img2port(img_url):##调整 这个代理不能用了
+#     """
+#     mimvp.com的端口号用图片来显示, 本函数将图片url转为端口, 目前的临时性方法并不准确
+#     """
+#     code = img_url.split("=")[-1]
+#     if code.find("AO0OO0O")>0:
+#         return 80
+#     else:
+#         return None
 
 def fetch_mimvp():
     """
-    从http://proxy.mimvp.com/free.php抓免费代理
+    从http://haoip.cc/tiqu.htm抓免费代理
     """
     proxyes = []
     try:
-        url = "http://proxy.mimvp.com/free.php?proxy=in_hp"
-        soup = get_soup(url)
-        table = soup.find("div", attrs={"id": "list"}).table
-        tds = table.tbody.find_all("td")
-        for i in range(0, len(tds), 10):
-            id = tds[i].text
-            ip = tds[i+1].text
-            port = img2port(tds[i+2].img["src"])
-            response_time = tds[i+7]["title"][:-1]
-            transport_time = tds[i+8]["title"][:-1]
-            if port is not None and float(response_time) < 1 :
-                proxy = "%s:%s" % (ip, port)
-                proxyes.append(proxy)
+        url = "http://haoip.cc/tiqu.htm"
+        soup = get_html(url)
+        table = re.findall(r'r/>(.*?)<br/>',soup,re.S)
+        for i in table:
+            proxy=re.sub('\n', '', i).strip()
+            proxyes.append(proxy)
     except:
-        logger.warning("fail to fetch from mimvp")
+        logger.warning("fail to fetch from haoip")
     return proxyes
 
 def fetch_xici():
@@ -161,15 +153,24 @@ def fetch_66ip():
     
 
 def check(proxy):
-    import urllib2
-    url = "http://www.baidu.com/js/bdsug.js?v=1.0.3.0"
-    proxy_handler = urllib2.ProxyHandler({'http': "http://" + proxy})
-    opener = urllib2.build_opener(proxy_handler,urllib2.HTTPHandler)
+    import requests
+    url='http://www.mzitu.com/'
+    # url = "http://www.baidu.com/js/bdsug.js?v=1.0.3.0"
+
+    # proxy_handler = urllib2.ProxyHandler({'http': "http://" + proxy})
+    # opener = urllib2.build_opener(proxy_handler,urllib2.HTTPHandler)
+    # try:
+    #     response = opener.open(url,timeout=3)
+    #     return response.code == 200 and response.url == url
+    # except Exception:
+    #     return False
+    proxies={'http': "http://" + proxy}
     try:
-        response = opener.open(url,timeout=3)
-        return response.code == 200 and response.url == url
+        test = requests.get(url, proxies=proxies, timeout=10)
+        return test.status_code==200 and test.url==url
     except Exception:
         return False
+
 
 def fetch_all(endpage=2):
     proxyes = []
@@ -182,6 +183,7 @@ def fetch_all(endpage=2):
     proxyes += fetch_66ip()
     valid_proxyes = []
     logger.info("checking proxyes validation")
+    print(u'检测数量是',len(proxyes))
     for p in proxyes:
         if check(p):
             valid_proxyes.append(p)
@@ -200,4 +202,4 @@ if __name__ == '__main__':
     proxyes = fetch_all()
     #print check("202.29.238.242:3128")
     for p in proxyes:
-        print(p)
+        print(p,'可用')
