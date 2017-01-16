@@ -28,14 +28,14 @@ class RandomProxy(object):
     def process_request(self,request,spider):
         '''
         在请求上添加代理
-        ：:param request
-        :param spider
-        :return
         '''
         ip = random.choice(self.iplist)
-        # ip = 'http://188.0.25.152:8081'
-        # result = self.db_helper.findOneResult({'proxyId':ip})
         request.meta['proxy'] =ip
+        # #如果有代理需要账号密码话
+        # proxy_user_pass='USERNAME:PASSWORD'
+        # # setup basic authentication for the proxy
+        # encoded_user_pass = base64.encodestring(proxy_user_pass)
+        # request.headers['Proxy-Authorization'] = 'Basic ' + encoded_user_pass
 # #test code
 # tl=RandomProxy()
 
