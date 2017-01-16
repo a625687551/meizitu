@@ -113,8 +113,8 @@ ITEM_PIPELINES = {
    'scrapy.pipelines.images.ImagesPipeline': 1,
    'scrapy.pipelines.files.FilesPipeline': 1
 }
-FILES_STORE = 'F:\meizitu'#文件存储地址
-IMAGES_STORE = 'F:\meizitu'#图片存储地址
+FILES_STORE = '/home/rising/图片'#文件存储地址
+IMAGES_STORE = '/home/rising/图片'#图片存储地址
 # 120 days of delay for files expiration
 # FILES_EXPIRES = 120
 
@@ -139,10 +139,10 @@ RETRY_TIMES=5
 
 # Enable and configure HTTP caching (disabled by default)
 # See http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html#httpcache-middleware-settings
-# HTTPCACHE_ENABLED = True
-# HTTPCACHE_EXPIRATION_SECS = 0
-# HTTPCACHE_DIR = 'httpcache'
-# HTTPCACHE_IGNORE_HTTP_CODES = []
-# HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
+HTTPCACHE_ENABLED = True
+HTTPCACHE_EXPIRATION_SECS = 0
+HTTPCACHE_DIR = 'httpcache'
+HTTPCACHE_IGNORE_HTTP_CODES = []
+HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
 
 DOWNLOAD_TIMEOUT = 10
