@@ -38,7 +38,7 @@ class Meizispider(scrapy.Spider):
         item['image_url']=image_url
         item['image_name']=re.sub(r'\\/:*?"<>|','',image_name.strip())+'.jpg'
         print(item,datetime.now())
-        time.sleep(0.5)
+        # time.sleep(0.5)
         yield item
 
 

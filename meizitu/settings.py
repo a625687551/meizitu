@@ -95,6 +95,7 @@ COOKIES_ENABLED = False
 DOWNLOADER_MIDDLEWARES = {
     'scrapy.concontrib.downloadermiddleware.useragent.UserAgentMiddleware' : None,
     'meizitu.middlewares.RandomUserAgent.RandomUserAgent': 200,
+    'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware': 110,
     'meizitu.middlewares.RandomProxy.RandomProxy': 200,
 }
 
