@@ -113,8 +113,10 @@ ITEM_PIPELINES = {
    'scrapy.pipelines.images.ImagesPipeline': 1,
    'scrapy.pipelines.files.FilesPipeline': 1
 }
-FILES_STORE = '/home/rising/图片'#文件存储地址
-IMAGES_STORE = '/home/rising/图片'#图片存储地址
+FILES_STORE = '/home/rising/图片/meizitu'#文件存储地址
+IMAGES_STORE = '/home/rising/图片/meizitu'#图片存储地址
+# FILES_STORE = 'F:\meizitu'#文件存储地址
+# IMAGES_STORE = 'F:\meizitu'#图片存储地址
 # 120 days of delay for files expiration
 # FILES_EXPIRES = 120
 

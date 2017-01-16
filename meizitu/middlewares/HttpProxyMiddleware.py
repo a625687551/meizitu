@@ -130,9 +130,9 @@ class HttpProxyMiddleware(object):
         logger.info("now using new proxy: %s" % self.proxyes[self.proxy_index]["proxy"])
 
         # 一定时间没更新后可能出现了在目前的代理不断循环不断验证码错误的情况, 强制抓取新代理
-        #if datetime.now() > self.last_fetch_proxy_time + timedelta(minutes=self.fetch_proxy_interval):
-        #    logger.info("%d munites since last fetch" % self.fetch_proxy_interval)
-        #    self.fetch_new_proxyes()
+        if datetime.now() > self.last_fetch_proxy_time + timedelta(minutes=self.fetch_proxy_interval):
+           logger.info("%d munites since last fetch" % self.fetch_proxy_interval)
+           self.fetch_new_proxyes()
 
     def set_proxy(self, request):
         """
