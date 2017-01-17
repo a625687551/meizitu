@@ -208,6 +208,7 @@ def fetch_all(endpage=9):
         if check(p):
             valid_proxyes.append(p)
             print(p)
+    print(valid_proxyes)
     return valid_proxyes
 
 if __name__ == '__main__':

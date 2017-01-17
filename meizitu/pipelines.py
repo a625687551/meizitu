@@ -5,10 +5,9 @@
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: http://doc.scrapy.org/en/latest/topics/item-pipeline.html
 from meizitu.items import MeizituItem
-import re
-import os
-import string
+from meizitu import settings
 from scrapy import Request
+from pymongo import MongoClient
 from scrapy.exceptions import DropItem
 from scrapy.pipelines.images import ImagesPipeline
 
@@ -17,7 +16,9 @@ class MeizituPipeline(object):
         return item
 
 class DownloadImagesPipeline(ImagesPipeline):
-
+    '''
+    对图片的下载包括命名和下载存放地址
+    '''
     def get_media_requests(self,item,info):#下载图片
         for image_url in item['image_url']:
             yield Request(image_url,meta={'item':item})
