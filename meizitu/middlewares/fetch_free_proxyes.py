@@ -30,7 +30,7 @@ def fetch_kxdaili(page):
             ip = tds[0].text
             port = tds[1].text
             latency = tds[4].text.split(" ")[0]
-            if float(latency) < 0.5: # 输出延迟小于0.5秒的代理
+            if float(latency) < 1: # 输出延迟小于1秒的代理
                 proxy = "%s:%s" % (ip, port)
                 proxyes.append(proxy)
     except:
@@ -55,7 +55,7 @@ def fetch_mimvp():
     try:
         url = "http://haoip.cc/tiqu.htm"
         soup = get_html(url)
-        table = re.findall(r'r/>(.*?)<br/>',soup,re.S)
+        table = re.findall('([0-9.]+:[0-9]+)<br/>', soup, re.S)
         for i in table:
             proxy=re.sub('\n', '', i).strip()
             proxyes.append(proxy)
@@ -110,22 +110,21 @@ def fetch_ip181():
 def fetch_httpdaili():
     """
     http://www.httpdaili.com/mfdl/
-    更新比较频繁
+    更新比较频繁,网页编码有问题没有解决
     """
     proxyes = []
     try:
         url = "http://www.httpdaili.com/mfdl/"
         soup = get_soup(url)
-        table = soup.find("div", attrs={"kb-item-wrap11"}).table
-        trs = table.find_all("tr")
-        for i in range(1, len(trs)):
+        table = soup.find("div", attrs={"kb-item-wrap11"})
+        trs = table.find_all("tr")[1:]
+        for i in range(1, len(trs)+1):
             try:
                 tds = trs[i].find_all("td")
                 ip = tds[0].text
                 port = tds[1].text
                 type = tds[2].text
-                if type == u"匿名":
-                    proxyes.append("%s:%s" % (ip, port))
+                proxyes.append("%s:%s" % (ip, port))
             except:
                 pass
     except Exception as e:
@@ -142,7 +141,8 @@ def fetch_66ip():
         # 修改getnum大小可以一次获取不同数量的代理
         url = "http://www.66ip.cn/nmtq.php?getnum=10&isp=0&anonymoustype=3&start=&ports=&export=&ipaddress=&area=1&proxytype=0&api=66ip"
         content = get_html(url)
-        urls = content.split("</script>")[-1].split("<br />")
+        # urls = content.split("</script>")[-1].split("<br />")
+        urls = re.findall('([0-9.]+:[0-9]+)<br />',content, re.S)
         for u in urls:
             if u.strip():
                 proxyes.append(u.strip())
@@ -172,7 +172,7 @@ def check(proxy):
         return False
 
 
-def fetch_all(endpage=2):
+def fetch_all(endpage=9):
     proxyes = []
     for i in range(1, endpage):
         proxyes += fetch_kxdaili(i)
@@ -183,7 +183,7 @@ def fetch_all(endpage=2):
     proxyes += fetch_66ip()
     valid_proxyes = []
     logger.info("checking proxyes validation")
-    print(u'检测数量是',len(proxyes))
+    print(u'检测数量是',len(proxyes),proxyes)
     for p in proxyes:
         if check(p):
             valid_proxyes.append(p)

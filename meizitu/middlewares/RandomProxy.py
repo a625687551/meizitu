@@ -21,10 +21,13 @@ class RandomProxy(object):
         #调用网站上提供的免费IP
         self.iplist=[]
         db_content=requests.get(url='http://haoip.cc/tiqu.htm')
-        iplistb=re.findall(r'r/>(.*?)<br/>',db_content.text,re.S)
+        # iplistb=re.findall(r'r/>(.*?)<br/>',db_content.text,re.S)
+        iplistb = re.findall('([0-9.]+:[0-9]+)<br/>', db_content.text, re.S)
         for i in iplistb:
             self.iplist.append('http://'+re.sub('\n','',i).strip())
-        # print(type(random.choice(self.iplist)))# test code
+        # test code
+        # print(type(random.choice(self.iplist)))
+        print(len(self.iplist),self.iplist)
     def process_request(self,request,spider):
         '''
         在请求上添加代理
@@ -36,7 +39,7 @@ class RandomProxy(object):
         # # setup basic authentication for the proxy
         # encoded_user_pass = base64.encodestring(proxy_user_pass)
         # request.headers['Proxy-Authorization'] = 'Basic ' + encoded_user_pass
-# #test code
-# tl=RandomProxy()
+#test code
+tl=RandomProxy()
 
 
