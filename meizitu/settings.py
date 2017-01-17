@@ -69,8 +69,9 @@ COOKIES_ENABLED = False
 DOWNLOADER_MIDDLEWARES = {
     'scrapy.concontrib.downloadermiddleware.useragent.UserAgentMiddleware' : None,
     'meizitu.middlewares.RandomUserAgent.RandomUserAgent': 200,
-    # 'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware': 110,
-    'meizitu.middlewares.HttpProxyMiddleware.HttpProxyMiddleware': 543,
+    'meizitu.middlewares.RandomProxy.RandomProxy': 200,
+    'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware': 110,
+    # 'meizitu.middlewares.HttpProxyMiddleware.HttpProxyMiddleware': 543,
     'scrapy.downloadermiddlewares.downloadtimeout.DownloadTimeoutMiddleware': 350,
     'scrapy.downloadermiddlewares.retry.RetryMiddleware': 351,
 }
@@ -97,6 +98,7 @@ IMAGES_STORE = 'F:\meizitu'#图片存储地址
 
 # 30 days of delay for images expiration
 IMAGES_EXPIRES = 1
+
 #开启重试次数
 RETRY_ENABLED =True
 RETRY_TIMES=5

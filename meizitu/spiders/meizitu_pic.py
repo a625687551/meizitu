@@ -23,28 +23,23 @@ class Meizispider(scrapy.Spider):
         UA=response.request.headers.get('User-Agent')
         UA=UA.decode('utf-8') if UA else UA
         print(proxy,u'代理开始采集',UA)
-        try:
-            content = response.xpath('//ul[@class="archives"]/li/p[2]/a')
-            for single in content:
-                page_url = single.xpath('@href').extract()[0]
-                yield Request(url=page_url, callback=self.get_all_page, meta={'page_url': page_url})
-        except Exception as e:
-            print(u'代理出现问题了',e)
-            req = response.request
-            req.meta["change_proxy"] = True
-            print(u'更换代理')
-            yield req
-
-        # if response.body == "banned":
+        #采用代理时候采用以下代码
+        # try:
+        #     content = response.xpath('//ul[@class="archives"]/li/p[2]/a')
+        #     for single in content:
+        #         page_url = single.xpath('@href').extract()[0]
+        #         yield Request(url=page_url, callback=self.get_all_page, meta={'page_url': page_url})
+        # except Exception as e:
+        #     print(u'代理出现问题了',e)
         #     req = response.request
         #     req.meta["change_proxy"] = True
         #     print(u'更换代理')
         #     yield req
-        # else:
-        #     content=response.xpath('//ul[@class="archives"]/li/p[2]/a')
-        #     for single in content:
-        #         page_url=single.xpath('@href').extract()[0]
-        #         yield Request(url=page_url,callback=self.get_all_page,meta={'page_url':page_url})
+
+        content=response.xpath('//ul[@class="archives"]/li/p[2]/a')
+        for single in content:
+            page_url=single.xpath('@href').extract()[0]
+            yield Request(url=page_url,callback=self.get_all_page,meta={'page_url':page_url})
     def get_all_page(self,response):
         '''
         爬去所有页面的链接
