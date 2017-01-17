@@ -10,9 +10,10 @@ logger = logging.getLogger(__name__)
 def get_html(url):#获取网页
     headers={"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.99 Safari/537.36"}
     html=requests.get(url,headers=headers)
-    return html.text
+    return html
 def get_soup(url):
-    soup = BeautifulSoup(get_html(url), "lxml")
+    soup = BeautifulSoup(get_html(url).text.encode(get_html(url).encoding), "lxml")
+
     return soup
 
 def fetch_kxdaili(page):
@@ -37,24 +38,15 @@ def fetch_kxdaili(page):
         logger.warning("fail to fetch from kxdaili")
     return proxyes
 
-# def img2port(img_url):##调整 这个代理不能用了
-#     """
-#     mimvp.com的端口号用图片来显示, 本函数将图片url转为端口, 目前的临时性方法并不准确
-#     """
-#     code = img_url.split("=")[-1]
-#     if code.find("AO0OO0O")>0:
-#         return 80
-#     else:
-#         return None
 
-def fetch_mimvp():
+def fetch_haoip():
     """
     从http://haoip.cc/tiqu.htm抓免费代理
     """
     proxyes = []
     try:
         url = "http://haoip.cc/tiqu.htm"
-        soup = get_html(url)
+        soup = get_html(url).text
         table = re.findall('([0-9.]+:[0-9]+)<br/>', soup, re.S)
         for i in table:
             proxy=re.sub('\n', '', i).strip()
@@ -124,7 +116,8 @@ def fetch_httpdaili():
                 ip = tds[0].text
                 port = tds[1].text
                 type = tds[2].text
-                proxyes.append("%s:%s" % (ip, port))
+                if type==u'匿名':
+                    proxyes.append("%s:%s" % (ip, port))
             except:
                 pass
     except Exception as e:
@@ -140,7 +133,7 @@ def fetch_66ip():
     try:
         # 修改getnum大小可以一次获取不同数量的代理
         url = "http://www.66ip.cn/nmtq.php?getnum=10&isp=0&anonymoustype=3&start=&ports=&export=&ipaddress=&area=1&proxytype=0&api=66ip"
-        content = get_html(url)
+        content = get_html(url).text
         # urls = content.split("</script>")[-1].split("<br />")
         urls = re.findall('([0-9.]+:[0-9]+)<br />',content, re.S)
         for u in urls:
@@ -150,6 +143,31 @@ def fetch_66ip():
         logger.warning("fail to fetch from httpdaili: %s" % e)
     return proxyes
 
+def fetch_coobobo(page):
+    """
+    http://www.coobobo.com/free-http-proxy/1
+    更新比较频繁,网页编码有问题没有解决
+    """
+    proxyes = []
+    try:
+        url = "http://www.coobobo.com/free-http-proxy/%d"%page
+        soup = get_soup(url)
+        table = soup.find("tbody")
+        trs = table.find_all("tr")
+        for i in range(1, len(trs)+1):
+            try:
+                tds = trs[i].find_all("td")
+                ip = tds[0].text
+                port = tds[1].text
+                type = tds[2].text.strip()
+                latency = tds[4].text.strip()[:-1]
+                if type==u'匿名' and float(latency)<1:
+                    proxyes.append("%s:%s" % (ip, port))
+            except:
+                pass
+    except Exception as e:
+        logger.warning("fail to fetch from coobobo: %s" % e)
+    return proxyes
     
 
 def check(proxy):
@@ -176,14 +194,16 @@ def fetch_all(endpage=9):
     proxyes = []
     for i in range(1, endpage):
         proxyes += fetch_kxdaili(i)
-    proxyes += fetch_mimvp()
+    proxyes += fetch_haoip()
     proxyes += fetch_xici()
     proxyes += fetch_ip181()
     proxyes += fetch_httpdaili()
     proxyes += fetch_66ip()
+    for i in range(1, endpage):
+        proxyes += fetch_coobobo(i)
+    print(u'检测数量是', len(proxyes), proxyes)
     valid_proxyes = []
     logger.info("checking proxyes validation")
-    print(u'检测数量是',len(proxyes),proxyes)
     for p in proxyes:
         if check(p):
             valid_proxyes.append(p)
@@ -201,5 +221,5 @@ if __name__ == '__main__':
     logger.setLevel(logging.DEBUG)
     proxyes = fetch_all()
     #print check("202.29.238.242:3128")
-    for p in proxyes:
-        print(p,'可用')
+    # for p in proxyes:
+    #     print(p,'可用')
