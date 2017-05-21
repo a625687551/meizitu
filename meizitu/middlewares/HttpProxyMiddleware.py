@@ -9,6 +9,7 @@ from meizitu.middlewares import fetch_free_proxyes
 
 logger = logging.getLogger(__name__)
 
+
 class HttpProxyMiddleware(object):
     # 遇到这些类型的错误直接当做代理不可用处理掉, 不再传给retrymiddleware
     DONT_RETRY_ERRORS = (TimeoutError, ConnectionRefusedError, ResponseNeverReceived, ConnectError, ValueError)
@@ -48,9 +49,9 @@ class HttpProxyMiddleware(object):
                     line = line.strip()
                     if not line or self.url_in_proxyes("http://" + line):
                         continue
-                    self.proxyes.append({"proxy": "http://"  + line,
-                            "valid": True,
-                            "count": 0})
+                    self.proxyes.append({"proxy": "http://" + line,
+                                         "valid": True,
+                                         "count": 0})
 
     @classmethod
     def from_crawler(cls, crawler):
@@ -87,10 +88,10 @@ class HttpProxyMiddleware(object):
             if self.url_in_proxyes("http://" + np):
                 continue
             else:
-                self.proxyes.append({"proxy": "http://"  + np,
+                self.proxyes.append({"proxy": "http://" + np,
                                      "valid": True,
                                      "count": 0})
-        if self.len_valid_proxy() < self.extend_proxy_threshold: # 如果发现抓不到什么新的代理了, 缩小threshold以避免白费功夫
+        if self.len_valid_proxy() < self.extend_proxy_threshold:  # 如果发现抓不到什么新的代理了, 缩小threshold以避免白费功夫
             self.extend_proxy_threshold -= 1
 
     def len_valid_proxy(self):
@@ -120,10 +121,10 @@ class HttpProxyMiddleware(object):
             logger.info("captcha thrashing")
             self.fetch_new_proxyes()
 
-        if self.len_valid_proxy() <= self.fixed_proxy or self.len_valid_proxy() < self.extend_proxy_threshold: # 如果代理列表中有效的代理不足的话重置为valid
+        if self.len_valid_proxy() <= self.fixed_proxy or self.len_valid_proxy() < self.extend_proxy_threshold:  # 如果代理列表中有效的代理不足的话重置为valid
             self.reset_proxyes()
 
-        if self.len_valid_proxy() < self.extend_proxy_threshold: # 代理数量仍然不足, 抓取新的代理
+        if self.len_valid_proxy() < self.extend_proxy_threshold:  # 代理数量仍然不足, 抓取新的代理
             logger.info("valid proxy < threshold: %d/%d" % (self.len_valid_proxy(), self.extend_proxy_threshold))
             self.fetch_new_proxyes()
 
@@ -143,7 +144,7 @@ class HttpProxyMiddleware(object):
             self.inc_proxy_index()
             proxy = self.proxyes[self.proxy_index]
 
-        if self.proxy_index == 0: # 每次不用代理直接下载时更新self.last_no_proxy_time
+        if self.proxy_index == 0:  # 每次不用代理直接下载时更新self.last_no_proxy_time
             self.last_no_proxy_time = datetime.now()
 
         if proxy["proxy"]:
@@ -158,7 +159,7 @@ class HttpProxyMiddleware(object):
         将index指向的proxy设置为invalid,
         并调整当前proxy_index到下一个有效代理的位置
         """
-        if index < self.fixed_proxy: # 可信代理永远不会设为invalid
+        if index < self.fixed_proxy:  # 可信代理永远不会设为invalid
             self.inc_proxy_index()
             return
 
@@ -182,13 +183,14 @@ class HttpProxyMiddleware(object):
             for i in range(self.fixed_proxy, len(self.proxyes)):
                 p = self.proxyes[i]
                 if p["valid"] or p["count"] >= self.dump_count_threshold:
-                    fd.write(p["proxy"][7:]+"\n") # 只保存有效的代理
+                    fd.write(p["proxy"][7:] + "\n")  # 只保存有效的代理
 
     def process_request(self, request, spider):
         """
         将request设置为使用代理
         """
-        if self.proxy_index > 0  and datetime.now() > (self.last_no_proxy_time + timedelta(minutes=self.recover_interval)):
+        if self.proxy_index > 0 and datetime.now() > (
+            self.last_no_proxy_time + timedelta(minutes=self.recover_interval)):
             logger.info("After %d minutes later, recover from using proxy" % self.recover_interval)
             self.last_no_proxy_time = datetime.now()
             self.proxy_index = 0
@@ -196,7 +198,7 @@ class HttpProxyMiddleware(object):
 
         # spider发现parse error, 要求更换代理
         if "change_proxy" in request.meta.keys() and request.meta["change_proxy"]:
-            logger.info("change proxy request get by spider: %s"  % request)
+            logger.info("change proxy request get by spider: %s" % request)
             self.invalid_proxy(request.meta["proxy_index"])
             request.meta["change_proxy"] = False
         self.set_proxy(request)
@@ -232,15 +234,14 @@ class HttpProxyMiddleware(object):
 
         # 只有当proxy_index>fixed_proxy-1时才进行比较, 这样能保证至少本地直连是存在的.
         if isinstance(exception, self.DONT_RETRY_ERRORS):
-            if request_proxy_index > self.fixed_proxy - 1 and self.invalid_proxy_flag: # WARNING 直连时超时的话换个代理还是重试? 这是策略问题
+            if request_proxy_index > self.fixed_proxy - 1 and self.invalid_proxy_flag:  # WARNING 直连时超时的话换个代理还是重试? 这是策略问题
                 if self.proxyes[request_proxy_index]["count"] < self.invalid_proxy_threshold:
                     self.invalid_proxy(request_proxy_index)
                 elif request_proxy_index == self.proxy_index:  # 虽然超时，但是如果之前一直很好用，也不设为invalid
                     self.inc_proxy_index()
-            else:               # 简单的切换而不禁用
+            else:  # 简单的切换而不禁用
                 if request.meta["proxy_index"] == self.proxy_index:
                     self.inc_proxy_index()
             new_request = request.copy()
             new_request.dont_filter = True
             return new_request
-

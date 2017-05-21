@@ -12,4 +12,4 @@ class MeizituItem(scrapy.Item):
     image_name = scrapy.Field()
     image_url = scrapy.Field()
     # images = scrapy.Field()
-    file_paths= scrapy.Field()
+    file_paths = scrapy.Field()
