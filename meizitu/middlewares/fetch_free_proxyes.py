@@ -7,14 +7,19 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-def get_html(url):#获取网页
-    headers={"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.99 Safari/537.36"}
-    html=requests.get(url,headers=headers)
+
+def get_html(url):  # 获取网页
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.99 Safari/537.36"}
+    html = requests.get(url, headers=headers)
     return html
+
+
 def get_soup(url):
     soup = BeautifulSoup(get_html(url).text.encode(get_html(url).encoding), "lxml")
 
     return soup
+
 
 def fetch_kxdaili(page):
     """
@@ -31,7 +36,7 @@ def fetch_kxdaili(page):
             ip = tds[0].text
             port = tds[1].text
             latency = tds[4].text.split(" ")[0]
-            if float(latency) < 1: # 输出延迟小于1秒的代理
+            if float(latency) < 1:  # 输出延迟小于1秒的代理
                 proxy = "%s:%s" % (ip, port)
                 proxyes.append(proxy)
     except:
@@ -49,11 +54,12 @@ def fetch_haoip():
         soup = get_html(url).text
         table = re.findall('([0-9.]+:[0-9]+)<br/>', soup, re.S)
         for i in table:
-            proxy=re.sub('\n', '', i).strip()
+            proxy = re.sub('\n', '', i).strip()
             proxyes.append(proxy)
     except:
         logger.warning("fail to fetch from haoip")
     return proxyes
+
 
 def fetch_xici():
     """
@@ -78,6 +84,7 @@ def fetch_xici():
         logger.warning("fail to fetch from xici")
     return proxyes
 
+
 def fetch_ip181():
     """
     http://www.ip181.com/
@@ -99,6 +106,7 @@ def fetch_ip181():
         logger.warning("fail to fetch from ip181: %s" % e)
     return proxyes
 
+
 def fetch_httpdaili():
     """
     http://www.httpdaili.com/mfdl/
@@ -110,19 +118,20 @@ def fetch_httpdaili():
         soup = get_soup(url)
         table = soup.find("div", attrs={"kb-item-wrap11"})
         trs = table.find_all("tr")[1:]
-        for i in range(1, len(trs)+1):
+        for i in range(1, len(trs) + 1):
             try:
                 tds = trs[i].find_all("td")
                 ip = tds[0].text
                 port = tds[1].text
                 type = tds[2].text
-                if type==u'匿名':
+                if type == u'匿名':
                     proxyes.append("%s:%s" % (ip, port))
             except:
                 pass
     except Exception as e:
         logger.warning("fail to fetch from httpdaili: %s" % e)
     return proxyes
+
 
 def fetch_66ip():
     """    
@@ -135,13 +144,14 @@ def fetch_66ip():
         url = "http://www.66ip.cn/nmtq.php?getnum=10&isp=0&anonymoustype=3&start=&ports=&export=&ipaddress=&area=1&proxytype=0&api=66ip"
         content = get_html(url).text
         # urls = content.split("</script>")[-1].split("<br />")
-        urls = re.findall('([0-9.]+:[0-9]+)<br />',content, re.S)
+        urls = re.findall('([0-9.]+:[0-9]+)<br />', content, re.S)
         for u in urls:
             if u.strip():
                 proxyes.append(u.strip())
     except Exception as e:
         logger.warning("fail to fetch from httpdaili: %s" % e)
     return proxyes
+
 
 def fetch_coobobo(page):
     """
@@ -150,29 +160,29 @@ def fetch_coobobo(page):
     """
     proxyes = []
     try:
-        url = "http://www.coobobo.com/free-http-proxy/%d"%page
+        url = "http://www.coobobo.com/free-http-proxy/%d" % page
         soup = get_soup(url)
         table = soup.find("tbody")
         trs = table.find_all("tr")
-        for i in range(1, len(trs)+1):
+        for i in range(1, len(trs) + 1):
             try:
                 tds = trs[i].find_all("td")
                 ip = tds[0].text
                 port = tds[1].text
                 type = tds[2].text.strip()
                 latency = tds[4].text.strip()[:-1]
-                if type==u'匿名' and float(latency)<1:
+                if type == u'匿名' and float(latency) < 1:
                     proxyes.append("%s:%s" % (ip, port))
             except:
                 pass
     except Exception as e:
         logger.warning("fail to fetch from coobobo: %s" % e)
     return proxyes
-    
+
 
 def check(proxy):
     import requests
-    url='http://www.mzitu.com/'
+    url = 'http://www.mzitu.com/'
     # url = "http://www.baidu.com/js/bdsug.js?v=1.0.3.0"
 
     # proxy_handler = urllib2.ProxyHandler({'http': "http://" + proxy})
@@ -182,10 +192,10 @@ def check(proxy):
     #     return response.code == 200 and response.url == url
     # except Exception:
     #     return False
-    proxies={'http': "http://" + proxy}
+    proxies = {'http': "http://" + proxy}
     try:
         test = requests.get(url, proxies=proxies, timeout=10)
-        return test.status_code==200 and test.url==url
+        return test.status_code == 200 and test.url == url
     except Exception:
         return False
 
@@ -211,16 +221,18 @@ def fetch_all(endpage=9):
     print(valid_proxyes)
     return valid_proxyes
 
+
 if __name__ == '__main__':
     import sys
+
     root_logger = logging.getLogger("")
     stream_handler = logging.StreamHandler(sys.stdout)
-    formatter = logging.Formatter('%(name)-8s %(asctime)s %(levelname)-8s %(message)s', '%a, %d %b %Y %H:%M:%S',)
+    formatter = logging.Formatter('%(name)-8s %(asctime)s %(levelname)-8s %(message)s', '%a, %d %b %Y %H:%M:%S', )
     stream_handler.setFormatter(formatter)
     root_logger.addHandler(stream_handler)
     logger = logging.getLogger(__name__)
     logger.setLevel(logging.DEBUG)
     proxyes = fetch_all()
-    #print check("202.29.238.242:3128")
+    # print check("202.29.238.242:3128")
     # for p in proxyes:
     #     print(p,'可用')
