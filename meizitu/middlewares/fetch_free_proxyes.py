@@ -1,5 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+
 from bs4 import BeautifulSoup
 import requests
 import re
@@ -10,7 +11,8 @@ logger = logging.getLogger(__name__)
 
 def get_html(url):  # 获取网页
     headers = {
-        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.99 Safari/537.36"}
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_2) "
+                      "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.99 Safari/537.36"}
     html = requests.get(url, headers=headers)
     return html
 
@@ -141,7 +143,8 @@ def fetch_66ip():
     proxyes = []
     try:
         # 修改getnum大小可以一次获取不同数量的代理
-        url = "http://www.66ip.cn/nmtq.php?getnum=10&isp=0&anonymoustype=3&start=&ports=&export=&ipaddress=&area=1&proxytype=0&api=66ip"
+        url = "http://www.66ip.cn/nmtq.php?getnum=10&isp=0&" \
+              "anonymoustype=3&start=&ports=&export=&ipaddress=&area=1&proxytype=0&api=66ip"
         content = get_html(url).text
         # urls = content.split("</script>")[-1].split("<br />")
         urls = re.findall('([0-9.]+:[0-9]+)<br />', content, re.S)
